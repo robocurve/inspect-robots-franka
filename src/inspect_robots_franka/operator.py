@@ -42,21 +42,36 @@ def _drain_stdin() -> None:
 
     if not sys.stdin.isatty():
         return
-    import select  # pragma: no cover - TTY-bound
+    if sys.platform == "win32":
+        import msvcrt  # pragma: no cover - import guard
 
-    while select.select([sys.stdin], [], [], 0)[0]:  # pragma: no cover - TTY-bound
-        sys.stdin.readline()  # pragma: no cover - TTY-bound
+        while msvcrt.kbhit():
+            msvcrt.getwch()
+        return
+    import select  # pragma: no cover - POSIX TTY-bound
+
+    while select.select([sys.stdin], [], [], 0)[0]:  # pragma: no cover - POSIX TTY-bound
+        sys.stdin.readline()  # pragma: no cover - POSIX TTY-bound
 
 
-def default_poll_end() -> bool:  # pragma: no cover - requires a real TTY
+def default_poll_end() -> bool:
     """Return whether an operator pressed Enter without blocking."""
-    import select
     import sys
 
     if not sys.stdin.isatty():
         return False
-    ready, _, _ = select.select([sys.stdin], [], [], 0)
-    if not ready:
-        return False
-    sys.stdin.readline()
-    return True
+    if sys.platform == "win32":
+        import msvcrt  # pragma: no cover - import guard
+
+        pressed_enter = False
+        while msvcrt.kbhit():
+            if msvcrt.getwch() in ("\r", "\n"):
+                pressed_enter = True
+        return pressed_enter
+    import select  # pragma: no cover - POSIX TTY-bound
+
+    ready, _, _ = select.select([sys.stdin], [], [], 0)  # pragma: no cover - POSIX TTY-bound
+    if not ready:  # pragma: no cover - POSIX TTY-bound
+        return False  # pragma: no cover - POSIX TTY-bound
+    sys.stdin.readline()  # pragma: no cover - POSIX TTY-bound
+    return True  # pragma: no cover - POSIX TTY-bound
