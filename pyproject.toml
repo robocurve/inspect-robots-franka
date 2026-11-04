@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "inspect-robots-franka"
 dynamic = ["version", "readme"]
 description = "Inspect Robots adapters for Franka FR3 and Panda arms driven by openpi DROID policies."
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "RoboCurve" }]
@@ -62,7 +62,7 @@ fallback_version = "0.0.0"
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
@@ -76,7 +76,7 @@ ignore = ["D105", "D107"]
 known-first-party = ["inspect_robots_franka"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 strict = true
 files = ["src/inspect_robots_franka"]
 
